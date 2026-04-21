@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Temple Donation</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<h2>🙏 Temple Donation</h2>
+<h3 id="total">₹ 0</h3>
+<button onclick="loadData()">Refresh</button>
+
+<table border="1">
+  <tr>
+    <th>Date & Time</th>
+    <th>Name</th>
+    <th>Amount</th>
+  </tr>
+  <tbody id="table"></tbody>
+</table>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://ugcinzaizdvkbqpvdjey.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+);
+
+async function loadData() {
+  const { data, error } = await supabase
+    .from("donations")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  let total = 0;
+  let html = "";
+
+  data.forEach(row => {
+    total += row.amount;
+    html += `
+      <tr>
+        <td>${new Date(row.created_at).toLocaleString()}</td>
+        <td>${row.name}</td>
+        <td>₹ ${row.amount}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("table").innerHTML = html;
+  document.getElementById("total").innerText = "₹ " + total;
+}
+
+loadData();
+</script>
+
+</body>
+</html>
